@@ -1,0 +1,22 @@
+# List-KeyboardLayouts.ps1 (run in PowerShell)
+$preload = Get-Item "HKCU:\Keyboard Layout\Preload" -ErrorAction SilentlyContinue
+$subs    = Get-Item "HKCU:\Keyboard Layout\Substitutes" -ErrorAction SilentlyContinue
+$map = @{
+  '00000409'='English (US)'; '00000809'='English (UK)'; '00020409'='US-International';
+  '00010409'='US Dvorak'; '00030409'='US Dvorak (L)'; '00040409'='US Dvorak (R)';
+  '00000419'='Russian'; '00010419'='Russian (Typewriter)'
+}
+if ($preload) {
+  "Preload layouts:"
+  $preload.GetValueNames() | Sort-Object | ForEach-Object {
+    $id = $preload.GetValue($_)
+    "{0}: {1}" -f $id, ($map[$id] ?? 'Unknown')
+  }
+}
+if ($subs) {
+  "`nSubstitutes:"
+  $subs.GetValueNames() | Sort-Object | ForEach-Object {
+    $k = $_; $v = $subs.GetValue($_)
+    "{0} -> {1} ({2})" -f $k, $v, ($map[$v] ?? 'Unknown')
+  }
+}
